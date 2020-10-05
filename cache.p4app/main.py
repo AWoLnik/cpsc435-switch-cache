@@ -9,10 +9,21 @@ net.start()
 
 s1, h1, h2 = net.get('s1'), net.get('h1'), net.get('h2')
 
-# TODO Populate IPv4 forwarding table
+# Populate IPv4 forwarding table
+s1.insertTableEntry(table_name='MyIngress.ipv4_lpm',
+                    match_fields={'hdr.ipv4.dstAddr': ['10.0.0.1', 32]},
+                    action_name='MyIngress.ipv4_forward',
+                    action_params={'dstAddr': h1.MAC(), 'port': 1})
+s1.insertTableEntry(table_name='MyIngress.ipv4_lpm',
+                    match_fields={'hdr.ipv4.dstAddr': ['10.0.0.2', 32]},
+                    action_name='MyIngress.ipv4_forward',
+                    action_params={'dstAddr': h2.MAC(), 'port': 2})
 
-# TODO Populate the cache table
-
+# Populate the cache table
+s1.insertTableEntry(table_name='MyIngress.cache_exact',
+                    match_fields={'hdr.request.key': 3},
+                    action_name='MyIngress.reply',
+                    action_params={'val': 33})
 
 # Now, we can test that everything works
 
